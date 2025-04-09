@@ -12,7 +12,7 @@ PREPROCESSED_DATA_DIR = "../data/Preprocessed_data"
 os.makedirs(PREPROCESSED_DATA_DIR, exist_ok=True)
 
 # Define bandpass filter range
-LOW_CUTOFF = 4  # 4Hz
+LOW_CUTOFF =  8 # 8Hz
 HIGH_CUTOFF = 30  # 30Hz
 
 def preprocess_eeg(file_path):
@@ -22,10 +22,9 @@ def preprocess_eeg(file_path):
     
     # Load EEG data
     raw = mne.io.read_raw_edf(file_path, preload=True)
-    raw.pick_types(eeg=True)  # Keep only EEG channels
-    raw.resample(160)  # Ensure uniform sampling rate (if needed)
+    raw.pick_types(eeg=True)  # Pick only EEG channels
 
-    # 1) Bandpass Filter (4-30Hz)
+    # 1) Bandpass Filter (8-30Hz)
     raw.filter(LOW_CUTOFF, HIGH_CUTOFF, fir_design='firwin')
 
     # 2️) Notch Filter (Remove 50Hz powerline noise)

@@ -7,7 +7,7 @@ from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 from collections import Counter
 
-FEATURES_DIR = "data/features"  # Use relative path from the current working directory
+FEATURES_DIR = "../data/features"  
 
 def load_features():
     X, y = [], []
