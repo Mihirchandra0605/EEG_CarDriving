@@ -1,0 +1,85 @@
+import numpy as np
+import torch
+import torch.nn as nn
+from torch.utils.data import DataLoader, TensorDataset, random_split
+from sklearn.metrics import classification_report
+import torch.nn.functional as F
+
+# 1. Load and reshape data
+X = np.load("../src/X_full_nolda.npy")
+y = np.load("../src/y_full_nolda.npy")
+
+# Normalize (optional but recommended)
+X = (X - X.mean()) / X.std()
+
+# Reshape: (18367, 336) → (18367, 21, 16)
+X = X.reshape((X.shape[0], 21, 16))
+
+# Convert to PyTorch tensors
+X_tensor = torch.tensor(X, dtype=torch.float32)
+y_tensor = torch.tensor(y, dtype=torch.long)
+
+# Dataset and DataLoader
+dataset = TensorDataset(X_tensor, y_tensor)
+train_size = int(0.8 * len(dataset))
+test_size = len(dataset) - train_size
+train_ds, test_ds = random_split(dataset, [train_size, test_size])
+
+train_loader = DataLoader(train_ds, batch_size=64, shuffle=True)
+test_loader = DataLoader(test_ds, batch_size=64, shuffle=False)
+
+# 2. Model
+class CNN_LSTM(nn.Module):
+    def __init__(self):
+        super(CNN_LSTM, self).__init__()
+        self.conv1 = nn.Conv1d(in_channels=16, out_channels=32, kernel_size=3, padding=1)
+        self.pool = nn.MaxPool1d(kernel_size=2)
+        self.lstm = nn.LSTM(input_size=32, hidden_size=64, batch_first=True)
+        self.fc = nn.Linear(64, 4)  # 4 classes
+
+    def forward(self, x):
+        # Input x: (batch, 21, 16) → (batch, 16, 21)
+        x = x.permute(0, 2, 1)
+        x = self.pool(F.relu(self.conv1(x)))  # (batch, 32, 10)
+        x = x.permute(0, 2, 1)  # → (batch, 10, 32)
+        lstm_out, _ = self.lstm(x)  # → (batch, 10, 64)
+        out = self.fc(lstm_out[:, -1, :])  # Take last time step
+        return out
+
+# 3. Training
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+model = CNN_LSTM().to(device)
+criterion = nn.CrossEntropyLoss()
+optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+
+print("🔁 Training started...")
+for epoch in range(30):
+    model.train()
+    running_loss = 0.0
+    for inputs, labels in train_loader:
+        inputs, labels = inputs.to(device), labels.to(device)
+        optimizer.zero_grad()
+        outputs = model(inputs)
+        loss = criterion(outputs, labels)
+        loss.backward()
+        optimizer.step()
+        running_loss += loss.item()
+
+    print(f"Epoch [{epoch+1}/30], Loss: {running_loss/len(train_loader):.4f}")
+
+# 4. Evaluation
+model.eval()
+all_preds = []
+all_labels = []
+
+with torch.no_grad():
+    for inputs, labels in test_loader:
+        inputs = inputs.to(device)
+        outputs = model(inputs)
+        preds = torch.argmax(outputs, dim=1).cpu().numpy()
+        all_preds.extend(preds)
+        all_labels.extend(labels.numpy())
+
+print("\n🎯 Test Accuracy:", np.mean(np.array(all_preds) == np.array(all_labels)))
+print("\n📊 Classification Report:")
+print(classification_report(all_labels, all_preds))
