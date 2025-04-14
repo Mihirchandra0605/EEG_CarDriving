@@ -26,9 +26,9 @@ X_balanced, y_balanced = zip(*balanced_data)
 X_balanced = np.array(X_balanced)
 y_balanced = np.array(y_balanced)
 
-# ✅ Save the balanced arrays
+#  Save the balanced arrays
 np.save('../src/X_train_balanced.npy', X_balanced)
 np.save('../src/y_train_balanced.npy', y_balanced)
 
-print("✅ Balanced training data saved.")
+print(" Balanced training data saved.")
 print(f"Shape: X_balanced = {X_balanced.shape}, y_balanced = {y_balanced.shape}")

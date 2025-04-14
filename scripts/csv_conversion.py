@@ -1,30 +1,23 @@
-import pickle
-import pandas as pd
+import os
 import numpy as np
+import pandas as pd
 
-with open('../data/features/S001R03_features.pkl', 'rb') as f:
-    data = pickle.load(f)
+FEATURES_DIR = "../data/features"
+CSV_DIR = "..data/csv_features"  # Directory to save CSV files
+os.makedirs(CSV_DIR, exist_ok=True)  # Create directory if it doesn't exist
 
-# Get the minimum length among all keys
-min_len = min([v.shape[0] if isinstance(v, np.ndarray) else len(v) for v in data.values()])
-
-flat_data = {}
-
-for key, value in data.items():
-    if isinstance(value, np.ndarray):
-        if value.ndim == 2:
-            for i in range(value.shape[1]):
-                flat_data[f'{key}_{i}'] = value[:min_len, i]
-        else:
-            flat_data[key] = value[:min_len]
-    elif isinstance(value, list):
-        flat_data[key] = value[:min_len]
-    else:
-        # Convert other types to list or skip
-        pass
-
-df = pd.DataFrame(flat_data)
-df.to_csv('output.csv', index=False)
-print(" 'output.csv'")
-
-
+for file in sorted(os.listdir(FEATURES_DIR)):
+    if file.endswith("_features.npy"):
+        file_path = os.path.join(FEATURES_DIR, file)
+        
+        # Load the numpy file
+        data = np.load(file_path)
+        
+        # Convert to DataFrame
+        df = pd.DataFrame(data)
+        
+        # Save as CSV
+        csv_filename = os.path.join(CSV_DIR, file.replace(".npy", ".csv"))
+        df.to_csv(csv_filename, index=False)
+        
+        print(f"Saved {csv_filename}")
