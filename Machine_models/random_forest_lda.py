@@ -2,14 +2,17 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import GridSearchCV, train_test_split
 from sklearn.metrics import classification_report, confusion_matrix
 import numpy as np
+import seaborn as sns
+import pandas as pd
+
 
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 import numpy as np
 
 # Load LDA reduced features
-X = np.load('../src/X_full_lda.npy')
-y = np.load('../src/y_full_lda.npy')
+X = np.load('../Feature_Extraction_Result_files/npy_files_lda/X_full_lda.npy')
+y = np.load('../Feature_Extraction_Result_files/npy_files_lda/y_full_lda.npy')
 
 # Split data
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, stratify=y, random_state=42)
@@ -38,6 +41,16 @@ print("\n Confusion Matrix:\n", confusion_matrix(y_test, y_pred))
 
 # Optional: print best parameters
 print("\n🔧 Best Parameters:", grid_search.best_params_)
+
+# Plot confusion matrix heatmap
+cm = confusion_matrix(y_test, y_pred)
+plt.figure(figsize=(8,6))
+sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=np.unique(y), yticklabels=np.unique(y))
+plt.xlabel('Predicted Labels')
+plt.ylabel('True Labels')
+plt.title('Confusion Matrix Heatmap')
+plt.show()
+
 
 
 # # Load LDA-transformed features and true labels

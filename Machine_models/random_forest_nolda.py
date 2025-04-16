@@ -7,8 +7,8 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 # Load LDA-processed features
-X = np.load('../src/X_full_nolda.npy')
-y = np.load('../src/y_full_nolda.npy')
+X = np.load('../Feature_Extraction_Result_files/npy_files_lda/X_full_lda.npy')
+y = np.load('../Feature_Extraction_Result_files/npy_files_lda/y_full_lda.npy')
 
 # Split into train and test sets
 X_train, X_test, y_train, y_test = train_test_split(

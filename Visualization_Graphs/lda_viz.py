@@ -3,8 +3,8 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
 # LDA-transformed features and labels
-X = np.load('../src/X_full_lda.npy') 
-y = np.load('../src/y_full_lda.npy')
+X = np.load('../Feature_Extraction_Result_files/npy_files_lda/X_full_lda.npy') 
+y = np.load('../Feature_Extraction_Result_files/npy_files_lda/y_full_lda.npy')
 
 # Map class labels to colors and names
 label_names = {

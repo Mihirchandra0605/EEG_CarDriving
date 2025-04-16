@@ -4,8 +4,8 @@ from sklearn.metrics import classification_report, confusion_matrix
 import numpy as np
 
 # Load LDA reduced features
-X = np.load('../src/X_full_lda.npy')
-y = np.load('../src/y_full_lda.npy')
+X = np.load('../Feature_Extraction_Result_files/npy_files_lda/X_full_lda.npy')
+y = np.load('../Feature_Extraction_Result_files/npy_files_lda/y_full_lda.npy')
 
 # Emphasize Component 3
 X[:, 2] = X[:, 2] * 5  # You can try 3, 5, 10 — tune this!

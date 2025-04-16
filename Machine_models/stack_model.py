@@ -8,8 +8,8 @@ from sklearn.preprocessing import StandardScaler
 import numpy as np
 
 # Load LDA reduced features
-X = np.load('../src/X_full_lda.npy')
-y = np.load('../src/y_full_lda.npy')
+X = np.load('../Feature_Extraction_Result_files/npy_files_lda/X_full_lda.npy')
+y = np.load('../Feature_Extraction_Result_files/npy_files_lda/y_full_lda.npy')
 
 
 # Split your data
